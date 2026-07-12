@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurum · Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css?v=10" />
+</head>
+<body class="admin-body">
+
+  <!-- ───────── Auth screen ───────── -->
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+      <span class="brand">AURUM</span>
+      <h2 id="authTitle" data-i18n="admin.login_title">შესვლა</h2>
+      <div class="auth-error" id="authError"></div>
+
+      <!-- login -->
+      <div id="loginForm">
+        <div class="field">
+          <label data-i18n="admin.username">მომხმარებელი</label>
+          <input id="loginUser" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label data-i18n="admin.password">პაროლი</label>
+          <input id="loginPass" type="password" autocomplete="current-password" />
+        </div>
+        <button class="btn btn--solid" id="loginBtn" data-i18n="admin.login">შესვლა</button>
+        <div class="auth-switch"><a id="showRegister" data-i18n="admin.to_register">რეგისტრაცია</a></div>
+      </div>
+
+      <!-- register -->
+      <div id="registerForm" style="display:none">
+        <div class="field">
+          <label data-i18n="admin.full_name">სახელი და გვარი</label>
+          <input id="regName" />
+        </div>
+        <div class="field">
+          <label data-i18n="admin.username">მომხმარებელი</label>
+          <input id="regUser" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label data-i18n="admin.password">პაროლი</label>
+          <input id="regPass" type="password" autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label data-i18n="admin.role">როლი</label>
+          <select id="regRole">
+            <option value="owner">owner</option>
+            <option value="manager">manager</option>
+            <option value="staff" selected>staff</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-i18n="admin.reg_code">სარეგისტრაციო კოდი</label>
+          <input id="regCode" />
+        </div>
+        <button class="btn btn--solid" id="registerBtn" data-i18n="admin.register">რეგისტრაცია</button>
+        <div class="auth-switch"><a id="showLogin" data-i18n="admin.to_login">შესვლა</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── Dashboard ───────── -->
+  <div id="dashboard" style="display:none">
+    <div class="admin-top">
+      <span class="brand">AURUM</span>
+      <div class="admin-user">
+        <div class="lang" id="langSwitch">
+          <button data-lang="ka">KA</button><button data-lang="en">EN</button><button data-lang="ru">RU</button>
+        </div>
+        <span id="whoami"></span>
+        <button class="btn btn--ghost btn--sm" id="logoutBtn" data-i18n="admin.logout">გასვლა</button>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-view="orders" data-i18n="admin.tab_orders">ცოცხალი შეკვეთები</button>
+      <button class="admin-tab" data-view="menu" data-i18n="admin.tab_menu">მენიუ</button>
+      <button class="admin-tab" data-view="categories" data-i18n="admin.tab_categories">კატეგორიები</button>
+      <button class="admin-tab" data-view="site" data-i18n="admin.tab_site">საიტი</button>
+    </div>
+
+    <!-- Live orders -->
+    <section class="admin-view active" data-view="orders">
+      <div class="admin-view-head">
+        <h2 data-i18n="admin.live_orders">ცოცხალი შეკვეთები</h2>
+        <span class="live-dot" id="liveDot">LIVE</span>
+      </div>
+      <div class="orders-grid" id="ordersGrid"></div>
+      <div class="empty-state" id="ordersEmpty" data-i18n="admin.no_orders">ახალი შეკვეთები ჯერ არ არის</div>
+    </section>
+
+    <!-- Menu management -->
+    <section class="admin-view" data-view="menu">
+      <div class="admin-view-head">
+        <h2 data-i18n="admin.tab_menu">მენიუ</h2>
+        <button class="btn btn--solid btn--sm" id="addItemBtn" data-i18n="admin.add_item">კერძის დამატება</button>
+      </div>
+      <table class="data-table">
+        <thead><tr>
+          <th></th><th data-i18n="admin.name_en">Name</th><th data-i18n="admin.category">კატეგ.</th>
+          <th data-i18n="admin.price">ფასი</th><th data-i18n="admin.available">ხელმისაწვდ.</th><th></th>
+        </tr></thead>
+        <tbody id="menuTbody"></tbody>
+      </table>
+    </section>
+
+    <!-- Categories -->
+    <section class="admin-view" data-view="categories">
+      <div class="admin-view-head">
+        <h2 data-i18n="admin.tab_categories">კატეგორიები</h2>
+        <button class="btn btn--solid btn--sm" id="addCatBtn" data-i18n="admin.add_category">კატეგორიის დამატება</button>
+      </div>
+      <table class="data-table">
+        <thead><tr>
+          <th data-i18n="admin.name_ka">KA</th><th data-i18n="admin.name_en">EN</th><th data-i18n="admin.name_ru">RU</th>
+          <th data-i18n="admin.sort">რიგი</th><th></th>
+        </tr></thead>
+        <tbody id="catTbody"></tbody>
+      </table>
+    </section>
+
+    <!-- Site content -->
+    <section class="admin-view" data-view="site">
+      <div class="admin-view-head">
+        <h2 data-i18n="admin.tab_site">საიტი</h2>
+        <button class="btn btn--solid btn--sm" id="saveSiteBtn" data-i18n="admin.save">შენახვა</button>
+      </div>
+
+      <div class="site-form">
+        <h3 class="site-form__h" data-i18n="admin.site_hero">მთავარი გვერდის წარწერა</h3>
+        <label class="field"><span data-i18n="admin.site_hero_loc">მდებარეობა (მაგ. მცხეთა · საქართველო)</span></label>
+        <div class="site-grid">
+          <label class="field"><span>KA</span><input id="s_hloc_ka" type="text" /></label>
+          <label class="field"><span>EN</span><input id="s_hloc_en" type="text" /></label>
+          <label class="field"><span>RU</span><input id="s_hloc_ru" type="text" /></label>
+        </div>
+        <label class="field"><span data-i18n="admin.site_hero_sub">ქვესათაური</span></label>
+        <div class="site-grid">
+          <label class="field"><span>KA</span><input id="s_hsub_ka" type="text" /></label>
+          <label class="field"><span>EN</span><input id="s_hsub_en" type="text" /></label>
+          <label class="field"><span>RU</span><input id="s_hsub_ru" type="text" /></label>
+        </div>
+
+        <h3 class="site-form__h" data-i18n="admin.site_about">რესტორნის აღწერა</h3>
+        <label class="field"><span data-i18n="admin.site_about_eyebrow">პატარა წარწერა (მაგ. ჩვენი ისტორია)</span></label>
+        <div class="site-grid">
+          <label class="field"><span>KA</span><input id="s_aeye_ka" type="text" /></label>
+          <label class="field"><span>EN</span><input id="s_aeye_en" type="text" /></label>
+          <label class="field"><span>RU</span><input id="s_aeye_ru" type="text" /></label>
+        </div>
+        <label class="field"><span data-i18n="admin.site_about_title">სათაური</span></label>
+        <div class="site-grid">
+          <label class="field"><span>KA</span><input id="s_atit_ka" type="text" /></label>
+          <label class="field"><span>EN</span><input id="s_atit_en" type="text" /></label>
+          <label class="field"><span>RU</span><input id="s_atit_ru" type="text" /></label>
+        </div>
+        <label class="field"><span data-i18n="admin.site_about_body">ტექსტი</span></label>
+        <label class="field"><span>KA</span><textarea id="s_about_ka" rows="3"></textarea></label>
+        <label class="field"><span>EN</span><textarea id="s_about_en" rows="3"></textarea></label>
+        <label class="field"><span>RU</span><textarea id="s_about_ru" rows="3"></textarea></label>
+
+        <h3 class="site-form__h" data-i18n="admin.site_stats">მაჩვენებლები (რიცხვები)</h3>
+        <div id="statsForm"></div>
+
+        <h3 class="site-form__h" data-i18n="admin.site_contact">კონტაქტი</h3>
+        <div class="site-grid">
+          <label class="field"><span data-i18n="contact.phone_label">ტელეფონი</span><input id="s_phone" type="text" /></label>
+          <label class="field"><span data-i18n="contact.address_label">მისამართი</span><input id="s_address" type="text" /></label>
+          <label class="field"><span data-i18n="contact.hours_label">სამუშაო საათები</span><input id="s_hours" type="text" /></label>
+          <label class="field"><span data-i18n="admin.site_email">ელფოსტა</span><input id="s_email" type="text" /></label>
+          <label class="field"><span>Instagram</span><input id="s_instagram" type="text" placeholder="https://instagram.com/..." /></label>
+          <label class="field"><span>Facebook</span><input id="s_facebook" type="text" placeholder="https://facebook.com/..." /></label>
+        </div>
+
+        <h3 class="site-form__h" data-i18n="admin.site_gallery">გალერეის ფოტოები</h3>
+        <div class="gallery-manage" id="galleryManage"></div>
+        <label class="btn btn--ghost btn--sm gallery-add">
+          <span data-i18n="admin.site_add_photo">ფოტოს დამატება</span>
+          <input id="galleryFile" type="file" accept="image/*" hidden />
+        </label>
+      </div>
+    </section>
+  </div>
+
+  <!-- ───────── Item modal ───────── -->
+  <div class="modal-backdrop" id="itemModal">
+    <div class="modal">
+      <h3 id="itemModalTitle" data-i18n="admin.add_item">კერძის დამატება</h3>
+      <input type="hidden" id="itemId" />
+      <div class="grid2">
+        <div class="field"><label data-i18n="admin.name_ka">სახელი KA</label><input id="f_name_ka" /></div>
+        <div class="field"><label data-i18n="admin.name_en">სახელი EN</label><input id="f_name_en" /></div>
+        <div class="field"><label data-i18n="admin.name_ru">სახელი RU</label><input id="f_name_ru" /></div>
+        <div class="field"><label data-i18n="admin.price">ფასი</label><input id="f_price" type="number" min="0" step="0.5" /></div>
+      </div>
+      <div class="field"><label data-i18n="admin.desc_ka">აღწერა KA</label><input id="f_desc_ka" /></div>
+      <div class="field"><label data-i18n="admin.desc_en">აღწერა EN</label><input id="f_desc_en" /></div>
+      <div class="field"><label data-i18n="admin.desc_ru">აღწერა RU</label><input id="f_desc_ru" /></div>
+      <div class="grid2">
+        <div class="field">
+          <label data-i18n="admin.category">კატეგორია</label>
+          <select id="f_category"></select>
+        </div>
+        <div class="field">
+          <label data-i18n="admin.image">სურათი</label>
+          <input id="f_image_file" type="file" accept="image/*" />
+        </div>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="f_available" checked /> <span data-i18n="admin.available">ხელმისაწვდომი</span></label>
+        <label><input type="checkbox" id="f_featured" /> <span data-i18n="admin.featured">შერჩეული</span></label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost btn--sm" data-close-modal data-i18n="admin.cancel">გაუქმება</button>
+        <button class="btn btn--solid btn--sm" id="saveItemBtn" data-i18n="admin.save">შენახვა</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── Category modal ───────── -->
+  <div class="modal-backdrop" id="catModal">
+    <div class="modal">
+      <h3 id="catModalTitle" data-i18n="admin.add_category">კატეგორიის დამატება</h3>
+      <input type="hidden" id="catId" />
+      <div class="field"><label data-i18n="admin.name_ka">სახელი KA</label><input id="c_name_ka" /></div>
+      <div class="field"><label data-i18n="admin.name_en">სახელი EN</label><input id="c_name_en" /></div>
+      <div class="field"><label data-i18n="admin.name_ru">სახელი RU</label><input id="c_name_ru" /></div>
+      <div class="field"><label data-i18n="admin.sort">რიგი</label><input id="c_sort" type="number" value="0" /></div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost btn--sm" data-close-modal data-i18n="admin.cancel">გაუქმება</button>
+        <button class="btn btn--solid btn--sm" id="saveCatBtn" data-i18n="admin.save">შენახვა</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/i18n.js?v=10"></script>
+  <script src="/js/admin.js?v=10"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurum · Order</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css?v=10" />
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a href="/" class="brand">AURUM</a>
+      <div class="nav__right">
+        <a href="/" class="btn btn--sm btn--ghost" data-i18n="nav.home">მთავარი</a>
+        <div class="lang" id="langSwitch" role="group" aria-label="Language">
+          <button data-lang="ka">KA</button>
+          <button data-lang="en">EN</button>
+          <button data-lang="ru">RU</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="order-wrap">
+    <!-- progress -->
+    <div class="steps" id="steps">
+      <div class="step-pill active" data-step="1"><span class="dot">1</span><span data-i18n="order.step_table">აირჩიეთ მაგიდა</span></div>
+      <div class="step-sep"></div>
+      <div class="step-pill" data-step="2"><span class="dot">2</span><span data-i18n="order.step_menu">აირჩიეთ კერძები</span></div>
+      <div class="step-sep"></div>
+      <div class="step-pill" data-step="3"><span class="dot">3</span><span data-i18n="order.step_review">დადასტურება</span></div>
+    </div>
+
+    <!-- step 1: tables -->
+    <section class="step-panel active" data-panel="1">
+      <h2 class="step-head" data-i18n="order.step_table">აირჩიეთ მაგიდა</h2>
+      <p class="step-hint" data-i18n="order.step_table_hint">შეეხეთ მაგიდას (13–52)</p>
+      <div class="tables-grid" id="tablesGrid"></div>
+    </section>
+
+    <!-- step 2: menu + cart -->
+    <section class="step-panel" data-panel="2">
+      <div class="selected-badge">
+        <span data-i18n="order.selected_table">არჩეული მაგიდა</span>:
+        <strong id="selTableLabel">—</strong>
+      </div>
+      <div class="order-layout">
+        <div class="order-menu-col">
+          <div class="order-cat-nav" id="orderCatNav"></div>
+          <div class="order-menu-list" id="orderMenu"></div>
+        </div>
+        <aside class="cart">
+          <h3 data-i18n="order.cart">თქვენი შეკვეთა</h3>
+          <div id="cartLines"></div>
+          <div class="cart-total">
+            <span data-i18n="order.total">ჯამი</span>
+            <span><span id="cartTotal">0</span> <span data-i18n="menu.currency">₾</span></span>
+          </div>
+          <div class="order-actions">
+            <button class="btn btn--ghost btn--sm" id="backToTables" data-i18n="order.back">უკან</button>
+            <button class="btn btn--solid btn--sm" id="toReview" data-i18n="order.next">შემდეგი</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- step 3: review -->
+    <section class="step-panel" data-panel="3">
+      <h2 class="step-head" data-i18n="order.step_review">დადასტურება</h2>
+      <div class="order-layout">
+        <div class="cart" style="position:static">
+          <h3 data-i18n="order.cart">თქვენი შეკვეთა</h3>
+          <div id="reviewLines"></div>
+          <div class="cart-total">
+            <span data-i18n="order.total">ჯამი</span>
+            <span><span id="reviewTotal">0</span> <span data-i18n="menu.currency">₾</span></span>
+          </div>
+        </div>
+        <div>
+          <div class="field">
+            <label data-i18n="order.name">სახელი</label>
+            <input id="custName" maxlength="80" />
+          </div>
+          <div class="field">
+            <label data-i18n="order.phone">ტელეფონი</label>
+            <input id="custPhone" maxlength="30" />
+          </div>
+          <div class="field">
+            <label data-i18n="order.note">შენიშვნა</label>
+            <textarea id="custNote" maxlength="300" data-i18n-placeholder="order.note_placeholder"></textarea>
+          </div>
+          <div class="order-actions">
+            <button class="btn btn--ghost btn--sm" id="backToMenu" data-i18n="order.back">უკან</button>
+            <button class="btn btn--solid" id="sendOrder" data-i18n="order.submit">შეკვეთის გაგზავნა</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- success -->
+    <section class="step-panel" data-panel="done">
+      <div class="success">
+        <div class="seal">✓</div>
+        <h2 data-i18n="order.success_title">შეკვეთა მიღებულია!</h2>
+        <p id="successBody"></p>
+        <button class="btn btn--solid" id="newOrder" data-i18n="order.new_order">ახალი შეკვეთა</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/i18n.js?v=10"></script>
+  <script src="/js/order.js?v=10"></script>
+</body>
+</html>
