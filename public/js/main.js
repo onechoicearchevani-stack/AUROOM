@@ -29,6 +29,8 @@ document.querySelectorAll('#navLinks a').forEach((a) =>
 
 // ── Menu rendering ─────────────────────────────────────────
 async function loadMenu() {
+  // The homepage no longer shows a menu section; skip if its container is absent.
+  if (!document.getElementById('menuGrid')) return;
   const [cats, items] = await Promise.all([
     fetch('/api/categories').then((r) => r.json()),
     fetch('/api/menu').then((r) => r.json()),

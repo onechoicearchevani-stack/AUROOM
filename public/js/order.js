@@ -5,6 +5,7 @@ const O = {
   categories: [],
   items: [],
   selectedTable: null,
+  activeCat: 'all',
   cart: new Map(), // id -> { item, qty }
 };
 
@@ -77,24 +78,45 @@ async function loadMenu() {
   renderMenu();
 }
 function renderMenu() {
-  const wrap = document.getElementById('orderMenu');
   const navWrap = document.getElementById('orderCatNav');
   const grouped = O.categories
     .map((c) => ({ cat: c, items: O.items.filter((i) => i.category_id === c.id) }))
     .filter((g) => g.items.length);
   const uncategorised = O.items.filter((i) => !i.category_id);
   if (uncategorised.length) grouped.push({ cat: null, items: uncategorised });
+  O._grouped = grouped;
 
-  // Category index (quick-nav) — lives above the scrolling list so it is always fully visible.
-  let nav = '';
+  // Category filter chips (All + each category).
+  let nav = `<button class="order-cat-chip${O.activeCat === 'all' ? ' active' : ''}" data-cat="all">${I18N.t('menu.all')}</button>`;
   grouped.forEach((g) => {
-    if (g.cat) nav += `<button class="order-cat-chip" data-jump="ordercat-${g.cat.id}">${g.cat[L('name')]}</button>`;
+    if (g.cat) {
+      const on = String(O.activeCat) === String(g.cat.id) ? ' active' : '';
+      nav += `<button class="order-cat-chip${on}" data-cat="${g.cat.id}">${g.cat[L('name')]}</button>`;
+    }
   });
   navWrap.innerHTML = nav;
+  navWrap.querySelectorAll('[data-cat]').forEach((b) =>
+    b.addEventListener('click', () => {
+      O.activeCat = b.dataset.cat === 'all' ? 'all' : Number(b.dataset.cat);
+      renderMenu();
+    })
+  );
+
+  renderMenuItems();
+}
+
+function renderMenuItems() {
+  const wrap = document.getElementById('orderMenu');
+  const grouped = O._grouped || [];
+  const shown =
+    O.activeCat === 'all'
+      ? grouped
+      : grouped.filter((g) => g.cat && String(g.cat.id) === String(O.activeCat));
 
   let html = '';
-  grouped.forEach((g) => {
-    if (g.cat) html += `<div class="order-cat-head" id="ordercat-${g.cat.id}">${g.cat[L('name')]}</div>`;
+  shown.forEach((g) => {
+    // Show the category heading only in "All" view (as separators).
+    if (g.cat && O.activeCat === 'all') html += `<div class="order-cat-head">${g.cat[L('name')]}</div>`;
     g.items.forEach((i) => {
       const desc = i[L('description')] ? `<div class="order-dish__desc">${i[L('description')]}</div>` : '';
       const media = i.image_url
@@ -117,14 +139,7 @@ function renderMenu() {
   wrap.querySelectorAll('[data-add]').forEach((b) =>
     b.addEventListener('click', () => addToCart(Number(b.dataset.add)))
   );
-  navWrap.querySelectorAll('[data-jump]').forEach((b) =>
-    b.addEventListener('click', () => {
-      const el = document.getElementById(b.dataset.jump);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      navWrap.querySelectorAll('.order-cat-chip').forEach((c) => c.classList.remove('active'));
-      b.classList.add('active');
-    })
-  );
+  wrap.scrollTop = 0;
 }
 
 // ── Cart ───────────────────────────────────────────────────
